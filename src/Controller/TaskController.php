@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
@@ -46,8 +47,13 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to edit this task')]
     public function editAction(Task $task, Request $request, EntityManagerInterface $em)
     {
+        if ($task->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Not authorized to update this task');
+            return $this->redirectToRoute('?');
+        }
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -82,8 +88,13 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to delete this task')]
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {
+        if ($task->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Not authorized to delete this task');
+            return $this->redirectToRoute('?');
+        }
         $em->remove($task);
         $em->flush();
 
