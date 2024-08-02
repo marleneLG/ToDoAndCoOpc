@@ -5,25 +5,21 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
-    /**
-     * @Route("/tasks", name="task_list")
-     */
+    #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function listAction(TaskRepository $repo)
     {
         return $this->render('task/list.html.twig', ['tasks' => $repo->findAll()]);
     }
 
-    /**
-     * @Route("/tasks/create", name="task_create")
-     */
+    #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
     public function createAction(Request $request, EntityManagerInterface $em)
     {
         $task = new Task();
@@ -44,9 +40,7 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
-     */
+    #[Route('/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to edit this task')]
     public function editAction(Task $task, Request $request, EntityManagerInterface $em)
     {
@@ -72,9 +66,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
-     */
+    #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: ['GET', 'POST'])]
     public function toggleTaskAction(Task $task, EntityManagerInterface $em)
     {
         $task->toggle(!$task->isDone());
@@ -85,9 +77,7 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
-     */
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to delete this task')]
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {

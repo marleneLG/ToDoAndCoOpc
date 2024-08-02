@@ -5,27 +5,23 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/users", name="user_list")
-     */
+    #[Route('/users', name: 'user_list', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights')]
     public function listAction(UserRepository $repo)
     {
         return $this->render('user/list.html.twig', ['users' => $repo->findAll()]);
     }
 
-    /**
-     * @Route("/users/create", name="user_create")
-     */
+    #[Route('/users/create', name: 'user_create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to create user')]
     public function createAction(Request $request, EntityManagerInterface $em)
     {
@@ -47,9 +43,7 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/users/{id}/edit", name="user_edit")
-     */
+    #[Route('/users/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to edit user')]
     public function editAction(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
     {
