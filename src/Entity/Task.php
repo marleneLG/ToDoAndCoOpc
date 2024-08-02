@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +29,12 @@ class Task
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     private ?User $user = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->isDone = false;
+    }
 
     public function getId(): ?int
     {
