@@ -11,14 +11,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\ExpressionLanguage\Expression;
+
+#[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access the admin dashboard.')]
 
 class UserController extends AbstractController
 {
     #[Route('/users', name: 'user_list', methods: ['GET'])]
-    #[IsGranted(new Expression(
-        '"ROLE_ADMIN" in role_names or (is_authenticated())'
-    ))]
     public function listAction(UserRepository $repo)
     {
         if ($this->getUser() === null) {
@@ -28,9 +26,6 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/create', name: 'user_create', methods: ['GET', 'POST'])]
-    #[IsGranted(new Expression(
-        '"ROLE_ADMIN" in role_names or (is_authenticated())'
-    ))]
     public function createAction(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
     {
         $user = new User();
@@ -59,9 +54,6 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
-    #[IsGranted(new Expression(
-        '"ROLE_ADMIN" in role_names or (is_authenticated())'
-    ))]
     public function editAction(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
     {
         $form = $this->createForm(UserType::class, $user);

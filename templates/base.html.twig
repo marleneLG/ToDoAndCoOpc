@@ -42,18 +42,20 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item">
                         <a href="{{ path('user_create') }}" class="nav-link text-primary">
                             <i class="fas fa-user-plus"></i> Créer un utilisateur
                         </a>
                     </li>
-                    {% if app.user %}
                     <li class="nav-item">
                         <a href="{{ path('user_list') }}" class="nav-link text-primary">
                             <i class="fas fa-user-plus"></i> Liste des utilisateurs
                         </a>
                     </li>
+                    {% endif %}
                     <li class="nav-item dropdown">
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <li>
                         <a class="dropdown-item" href="{{ path('logout') }}">
                             <i class="fas fa-sign-out-alt"></i> Se déconnecter
