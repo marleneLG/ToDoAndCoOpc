@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +14,18 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'login')]
     public function loginAction(AuthenticationUtils $authenticationUtils)
     {
-
+        // 1. REDIRECT USER IF USER IS CONNECTED
+        if ($this->getUser()) {
+            return $this->redirectToRoute('homepage');
+        }
+        //2. get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
 
+        //3. last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
         return $this->render('security/login.html.twig', array(
             'last_username' => $lastUsername,
-            'error'         => $error,
+            'error' => $error,
         ));
     }
 
@@ -34,14 +40,9 @@ class SecurityController extends AbstractController
     /**
      * @Route("/logout", name="logout")
      */
-    #[Route('/logout', name: '_logout_main')]
-    public function logout(Security $security): Response
+    #[Route('/logout', name: 'logout')]
+    public function logoutCheck(): Exception
     {
-        // logout the user in on the current firewall
-        $response = $security->logout();
-
-        // you can also disable the csrf logout
-        $response = $security->logout(false);
-        return $response;
+        throw new \Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
     }
 }

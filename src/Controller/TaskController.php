@@ -8,6 +8,7 @@ use App\Repository\TaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -41,7 +42,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/edit', name: 'task_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to edit this task')]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function editAction(Task $task, Request $request, EntityManagerInterface $em)
     {
         if ($task->getUser() !== $this->getUser()) {
@@ -78,7 +81,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to delete this task')]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {
         if ($task->getUser() !== $this->getUser()) {

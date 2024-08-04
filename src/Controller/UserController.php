@@ -11,27 +11,42 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\ExpressionLanguage\Expression;
 
 class UserController extends AbstractController
 {
     #[Route('/users', name: 'user_list', methods: ['GET'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights')]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function listAction(UserRepository $repo)
     {
+        if ($this->getUser() === null) {
+            return $this->redirectToRoute('homepage');
+        }
         return $this->render('user/list.html.twig', ['users' => $repo->findAll()]);
     }
 
     #[Route('/users/create', name: 'user_create', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to create user')]
-    public function createAction(Request $request, EntityManagerInterface $em)
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
+    public function createAction(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
-
+        if ($this->getUser() === null) {
+            return $this->redirectToRoute('homepage');
+        }
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $plaintextPassword = $form->getData()->getPassword();
+            $hashedPassword = $passwordHasher->hashPassword(
+                $user,
+                $plaintextPassword
+            );
+            $user->setPassword($hashedPassword);
             $em->persist($user);
             $em->flush();
 
@@ -44,7 +59,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to edit user')]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function editAction(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher)
     {
         $form = $this->createForm(UserType::class, $user);
