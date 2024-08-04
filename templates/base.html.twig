@@ -84,11 +84,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endfor %}
-
-                {% for flash_message in app.session.flashBag.get('error') %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Oops !</strong> {{ flash_message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {% for error in app.flashes('error') %}
+                <div class="alert alert-success" role="alert">
+                    {{ error }}
                 </div>
                 {% endfor %}
 

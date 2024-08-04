@@ -49,7 +49,7 @@ class TaskController extends AbstractController
     {
         if ($task->getUser() !== $this->getUser()) {
             $this->addFlash('error', 'Not authorized to update this task');
-            return $this->redirectToRoute('?');
+            return $this->redirectToRoute('task_list');
         }
         $form = $this->createForm(TaskType::class, $task);
 
