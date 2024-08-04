@@ -1,17 +1,139 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Une application de liste de tâches simple et efficace.">
+    <meta name="author" content="OpenClassrooms">
+
+    <title>To Do List App</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <link href="{{ asset('styles/app.css') }}" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" width="30" height="30"
+                    class="d-inline-block align-top">
+                To Do List App
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a href="{{ path('user_create') }}" class="nav-link text-primary">
+                            <i class="fas fa-user-plus"></i> Créer un utilisateur
+                        </a>
+                    </li>
+                    {% if app.user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i> {{ app.user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ path('profile') }}">
+                                    <i class="fas fa-user-cog"></i> Mon profil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    {% if 'login' != app.request.attributes.get('_route') %}
+                    <li class="nav-item">
+                        <a href="{{ path('login') }}" class="nav-link text-success">
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mt-5 pt-5">
+        <div class="row">
+            <div class="col-md-12">
+                {% for flash_message in app.session.flashBag.get('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Superbe !</strong> {{ flash_message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+
+                {% for flash_message in app.session.flashBag.get('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Oops !</strong> {{ flash_message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+
+                {% block header_title %}
+                <h1 class="mt-4">Bienvenue sur votre To Do List</h1>
+                {% endblock %}
+                {% block header_img %}
+                <img class="img-fluid rounded my-4" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                {% block body %}
+                <!-- Placeholder for the main content -->
+                <p>Commencez par ajouter une tâche à votre liste.</p>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+
+    <footer class="bg-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <p class="mb-0">Copyright &copy; 2024 OpenClassrooms. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>
