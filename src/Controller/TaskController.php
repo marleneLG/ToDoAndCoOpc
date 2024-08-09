@@ -80,7 +80,7 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['DELETE'])]
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['GET'])]
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
@@ -88,7 +88,7 @@ class TaskController extends AbstractController
     {
         if ($task->getUser() !== $this->getUser()) {
             $this->addFlash('error', 'Not authorized to delete this task');
-            return $this->redirectToRoute('?');
+            return $this->redirectToRoute('task_list');
         }
         $em->remove($task);
         $em->flush();
