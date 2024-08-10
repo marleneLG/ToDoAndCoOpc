@@ -19,6 +19,15 @@ class TaskRepository extends ServiceEntityRepository
     public function findAllTaskByUser($task): array
     {
         $qb = $this->createQueryBuilder('t')
+            ->andWhere('t.user = :task')
+            ->setParameter('task', $task);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findAllTaskByUserAdmin($task): array
+    {
+        $qb = $this->createQueryBuilder('t')
             ->andWhere('t.user = :task OR t.user IS NULL')
             ->setParameter('task', $task);
         return $qb->getQuery()->getResult();
