@@ -17,10 +17,13 @@ class TaskController extends AbstractController
     #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function listAction(TaskRepository $repo)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $repo->findAll()]);
+        return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUser($this->getUser())]);
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function createAction(Request $request, EntityManagerInterface $em)
     {
         $task = new Task();
@@ -70,6 +73,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/{id}/toggle', name: 'task_toggle', methods: ['GET', 'POST'])]
+    #[IsGranted(new Expression(
+        '"ROLE_ADMIN" in role_names or (is_authenticated())'
+    ))]
     public function toggleTaskAction(Task $task, EntityManagerInterface $em)
     {
         $task->toggle(!$task->isDone());

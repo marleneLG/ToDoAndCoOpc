@@ -18,9 +18,16 @@ body {
 
 footer {
     background-color: #e9ecef;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 img.img-fluid {
     max-height: 400px;
     object-fit: cover;
+}
+
+.list-task {
+    margin-top: 10px;
 }
