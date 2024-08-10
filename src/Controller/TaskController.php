@@ -17,7 +17,11 @@ class TaskController extends AbstractController
     #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function listAction(TaskRepository $repo)
     {
-        return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUser($this->getUser())]);
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUserAdmin($this->getUser())]);
+        } else {
+            return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUser($this->getUser())]);
+        }
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]
@@ -93,8 +97,17 @@ class TaskController extends AbstractController
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {
         if ($task->getUser() !== $this->getUser()) {
-            $this->addFlash('error', 'Not authorized to delete this task');
-            return $this->redirectToRoute('task_list');
+            if ($task->getUser() === null) {
+                if (!$this->isGranted('ROLE_ADMIN')) {
+                    $this->addFlash('error', 'Not authorized to delete this task');
+                    return $this->redirectToRoute('task_list');
+                }
+            }
+
+            if (!$this->isGranted('ROLE_ADMIN')) {
+                $this->addFlash('error', 'Not authorized to delete this task');
+                return $this->redirectToRoute('task_list');
+            }
         }
         $em->remove($task);
         $em->flush();
