@@ -69,7 +69,8 @@ class TaskController extends AbstractController
 
             return $this->redirectToRoute('task_list');
         }
-
+        dump('logger edit task');
+        dump($task);
         return $this->render('task/edit.html.twig', [
             'form' => $form->createView(),
             'task' => $task,
