@@ -36,10 +36,6 @@
                     class="d-inline-block align-top">
                 To Do List App
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if is_granted('ROLE_ADMIN') %}
@@ -54,14 +50,14 @@
                         </a>
                     </li>
                     {% endif %}
-                    <li class="nav-item dropdown">
+                    {# <li class="nav-item dropdown"> #}
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <li>
                         <a class="dropdown-item" href="{{ path('logout') }}">
                             <i class="fas fa-sign-out-alt"></i> Se déconnecter
                         </a>
                     </li>
-                    </li>
+                    {# </li> #}
                     {% else %}
                     {% if 'login' != app.request.attributes.get('_route') %}
                     <li class="nav-item">
