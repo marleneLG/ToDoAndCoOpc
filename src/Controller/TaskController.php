@@ -17,7 +17,7 @@ class TaskController extends AbstractController
     #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function listAction(TaskRepository $repo)
     {
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+        if ($this->isGranted('ROLE_ADMIN')) {
             return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUserAdmin($this->getUser())]);
         } else {
             return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUser($this->getUser())]);
