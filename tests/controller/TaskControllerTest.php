@@ -64,8 +64,8 @@ class TaskControllerTest extends WebTestCase
         static::assertSame(1, $crawler->filter('textarea[name="task[content]"]')->count());
 
         $form = $crawler->selectButton('Ajouter')->form();
-        $form['task[title]'] = 'Nouvelle tâche';
-        $form['task[content]'] = 'Ceci est une tâche crée par un test';
+        $form['task[title]'] = 'Nouvelle tâche de test';
+        $form['task[content]'] = 'blabla Ceci est une tâche crée par un test';
         $client->submit($form);
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
@@ -87,7 +87,7 @@ class TaskControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $crawler = $client->request('GET', '/tasks/1/edit');
+        $crawler = $client->request('GET', '/tasks/38/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
         // Test if creation page field exists
@@ -104,29 +104,38 @@ class TaskControllerTest extends WebTestCase
         static::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
-    // public function testDeleteTaskAction()
-    // {
-    //     $securityControllerTest = new SecurityControllerTest();
-    //     $client = $securityControllerTest->testLogin();
+    public function testDeleteTaskAction()
+    {
+        $securityControllerTest = new SecurityControllerTest();
+        $client = $securityControllerTest->testLogin();
 
-    //     $client->request('GET', '/tasks/1/delete');
-    //     static::assertSame(302, $client->getResponse()->getStatusCode());
-    //     $client->followRedirect();
-    //     static::assertSame(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', '/tasks/65/delete');
+        static::assertSame(302, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+    }
 
-    //     // Test if success message is displayed
-    //     // static::assertContains("Superbe ! La tâche a bien été supprimée.", $crawler->filter('div.alert.alert-success')->text());
-    // }
+    public function testToggleTaskAction()
+    {
+        $securityControllerTest = new SecurityControllerTest();
+        $client = $securityControllerTest->testLogin();
 
-    // public function testToggleTaskAction()
-    // {
-    //     $securityControllerTest = new SecurityControllerTest();
-    //     $client = $securityControllerTest->testLogin();
+        $client->request('GET', '/tasks/64/toggle');
+        static::assertSame(302, $client->getResponse()->getStatusCode());
 
-    //     $client->request('GET', '/tasks/1/toggle');
-    //     static::assertSame(302, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+    }
 
-    //     $client->followRedirect();
-    //     static::assertSame(200, $client->getResponse()->getStatusCode());
-    // }
+    public function testDeleteTaskActionWithSimpleUserWhereAuthorIsAnonymous()
+    {
+        $securityControllerTest = new SecurityControllerTest();
+        $client = $securityControllerTest->testLogin();
+
+        $client->request('GET', '/tasks/63/delete');
+        static::assertSame(302, $client->getResponse()->getStatusCode());
+
+        $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+    }
 }

@@ -17,7 +17,7 @@ class TaskFixture extends Fixture
         $task->setTitle('test');
         $task->setContent('testContent');
         $task->setDone(false);
-        $task->setUser($task->getUser());
+        $task->setUser($user);
         $manager->persist($task);
 
         $task = new Task();
@@ -25,7 +25,7 @@ class TaskFixture extends Fixture
         $task->setTitle('test2');
         $task->setContent('testContent2');
         $task->setDone(false);
-        $task->setUser($task->getUser());
+        $task->setUser($user);
         $manager->persist($task);
 
         $task = new Task();
@@ -33,7 +33,7 @@ class TaskFixture extends Fixture
         $task->setTitle('test3');
         $task->setContent('testContent3');
         $task->setDone(false);
-        $task->setUser($task->getUser());
+        $task->setUser($user);
         $manager->persist($task);
 
         $task = new Task();
@@ -49,7 +49,7 @@ class TaskFixture extends Fixture
         $task->setTitle('test5');
         $task->setContent('testContent5');
         $task->setDone(false);
-        $task->setUser($task->getUser());
+        $task->setUser($user);
         $manager->persist($task);
         dump('task fixture :');
         dump($task);

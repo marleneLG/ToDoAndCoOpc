@@ -35,8 +35,9 @@ class UserControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/users');
+        $crawler = $client->request('GET', '/users');
         static::assertSame(200, $client->getResponse()->getStatusCode());
+        static::assertSame("Liste des utilisateurs", $crawler->filter('h1')->text());
     }
 
     public function testEditAction()
@@ -60,31 +61,24 @@ class UserControllerTest extends WebTestCase
         }
         $randomNumber = random_int(0, count($users) - 1);
         $user = $users[$randomNumber];
-        $crawler = $client->request('POST', '/users/' . $user->getId() . '/edit');
+        $crawler = $client->request('POST', '/users/17/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
-        // Test if edit page field exists
-        static::assertSame(0, $crawler->filter('input[name="username"]')->count());
-        static::assertSame(0, $crawler->filter('input[name="password"]')->count());
-        static::assertSame(0, $crawler->filter('input[name="email"]')->count());
-        static::assertSame(0, $crawler->filter('input[name="roles"]')->count());
+        $form = $crawler->selectButton('Modifier')->form();
+        $form['user[username]'] = 'testFixture2';
+        $form['user[email]'] = 'john.doe2@example.com';
+        $form['user[roles]'] = 'ROLE_ADMIN';
+        $client->submit($form);
+        static::assertSame(302, $client->getResponse()->getStatusCode());
 
-        // $form = $crawler->selectButton('Modifier')->form();
-        // $form['username'] = 'user';
-        // $form['password]'] = 'test';
-        // // $form['user[password][second]'] = 'test';
-        // $form['email'] = 'editedUser@example.org';
-        // $form['roles'] = 'ROLE_ADMIN';
-        // $client->submit($form);
-        // static::assertSame(302, $client->getResponse()->getStatusCode());
-
-        // $crawler = $client->followRedirect();
-        // static::assertSame(200, $client->getResponse()->getStatusCode());
+        $crawler = $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
-    public function testCreateUser()
+    public function testEditUser()
     {
-        $client = static::createClient();
+        $securityControllerTest = new SecurityControllerTest();
+        $client = $securityControllerTest->testLogin();
         $userRepository = static::getContainer()->get(UserRepository::class);
 
         // retrieve the test user
@@ -92,126 +86,60 @@ class UserControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $client->request('POST', '/users/create');
-        $this->assertResponseStatusCodeSame(expectedCode: Response::HTTP_OK);
 
-        $username = 'Test create user';
-        $password = "Test create user";
-        $email = 'test-create-user@test.fr';
-        $role = '["ROLE_USER"]';
+        // simulate $testUser being logged in
+        $client->loginUser($testUser);
+        $crawler = $client->request('GET', '/users/17/edit');
+        static::assertSame(200, $client->getResponse()->getStatusCode());
 
-        $crawler = $client->request('GET', "/users/create");
+        // Test if creation page field exists
+        static::assertSame(1, $crawler->filter('input[name="user[username]"]')->count());
+        static::assertSame(1, $crawler->filter('textarea[name="user[email]"]')->count());
 
-        $crawler = $client->request('POST', "/users/create", [
-            'user' => [
-                'username' => $username,
-                'password' => [
-                    'first' => $password,
-                    'second' => $password
-                ],
-                'email' => $email,
-                'role' => $role,
-            ]
-        ]);
+        $form = $crawler->selectButton('Modifier')->form();
+        $form['user[username]'] = 'newuser5';
+        $form['user[password][first]'] = 'test';
+        $form['user[password][second]'] = 'test';
+        $form['user[email]'] = 'newUser5@example.org';
+        $form['user[roles]'] = ["ROLE_USER"];
+        $client->submit($form);
+        static::assertSame(302, $client->getResponse()->getStatusCode());
 
-        // check if task is created
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
-        // check in db
-           $entityManager = $client->getContainer()
-            ->get('doctrine')
-            ->getManager();
-
-        $userCreated = $entityManager
-        ->getRepository(User::class)
-        ->findOneBy(['username' => $username]);
-
-        // $this->assertNotEquals(null, $userCreated);
-
+        $crawler = $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
-    public function testEditUser()
+    public function testCreateAction()
     {
-        $client = static::createClient();
-        // $userRepository = static::getContainer()->get(UserRepository::class);
-        $entityManager = $client->getContainer()
-            ->get('doctrine')
-            ->getManager();
+        $securityControllerTest = new SecurityControllerTest();
+        $client = $securityControllerTest->testLogin();
+        $userRepository = static::getContainer()->get(UserRepository::class);
 
-        // // retrieve the test user
-        // $testUser = $userRepository->findOneByEmail('john.doe@example.com');
+        // retrieve the test user
+        $testUser = $userRepository->findOneByEmail('john.doe@example.com');
 
-        // // simulate $testUser being logged in
-        // $client->loginUser($testUser);
-        // $client->request('POST', '/users/1/edit');
-        // static::assertSame(200, $client->getResponse()->getStatusCode());
+        // simulate $testUser being logged in
+        $client->loginUser($testUser);
+        $crawler = $client->request('POST', '/users/create');
+        static::assertSame(200, $client->getResponse()->getStatusCode());
 
-        $allUsers = $entityManager
-            ->getRepository(User::class)
-            ->findAll();
+        // Test if creation page field exists
+        static::assertSame(1, $crawler->filter('input[name="user[username]"]')->count());
+        static::assertSame(1, $crawler->filter('input[name="user[password][first]"]')->count());
+        static::assertSame(1, $crawler->filter('input[name="user[password][second]"]')->count());
+        static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
+        static::assertSame(0, $crawler->filter('input[name="user[roles][]"]')->count());
 
-        $users = [];
+        $form = $crawler->selectButton('Ajouter')->form();
+        $form['user[username]'] = 'newuser';
+        $form['user[password][first]'] = 'test';
+        $form['user[password][second]'] = 'test';
+        $form['user[email]'] = 'newUser2@example.org';
+        $form['user[roles]'] = ["ROLE_USER"];
+        $client->submit($form);
+        static::assertSame(302, $client->getResponse()->getStatusCode());
 
-        foreach ($allUsers as $user) {
-            if ($user->getUsername() !== "admin" && $user->getUsername() !== "anonyme" && $user->getUsername() !== "user" && $user->getUsername() !== "user2") {
-                array_push($users, $user);
-            }
-        }
-
-        $randomNumber = random_int(0, count($users) - 1);
-        $user = $users[$randomNumber];
-        $urlUpdateUser = '/users/' . $user->getId() . '/edit';
-
-        $client->request('GET', $urlUpdateUser);
-
-        $client->request('POST', $urlUpdateUser, [
-            'user' => [
-                'username' => 'test 2' . ' update', // update username
-                'password' => [
-                    'first' => '000000',
-                    'second' => '000000'
-                ],
-                'email' => 'testcoverage@test.com',
-                'role' => 'ROLE_ADMIN',
-            ]
-        ]);
-
-        // check if task is updated
-        $this->assertEquals(302, $client->getResponse()->getStatusCode());
-
-        $client->followRedirect();
+        $crawler = $client->followRedirect();
+        static::assertSame(200, $client->getResponse()->getStatusCode());
     }
-
-    // public function testCreateAction()
-    // {
-    //     $client = static::createClient();
-    //     $userRepository = static::getContainer()->get(UserRepository::class);
-
-    //     // retrieve the test user
-    //     $testUser = $userRepository->findOneByEmail('john.doe@example.com');
-
-    //     // simulate $testUser being logged in
-    //     $client->loginUser($testUser);
-    //     $crawler = $client->request('POST', '/users/create');
-    //     static::assertSame(200, $client->getResponse()->getStatusCode());
-
-    //     // Test if creation page field exists
-    //     static::assertSame(1, $crawler->filter('input[name="user[username]"]')->count());
-    //     static::assertSame(1, $crawler->filter('input[name="user[password][first]"]')->count());
-    //     static::assertSame(1, $crawler->filter('input[name="user[password][second]"]')->count());
-    //     static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
-    //     static::assertSame(0, $crawler->filter('input[name="user[roles][]"]')->count());
-
-    //     $form = $crawler->selectButton('Ajouter')->form();
-    //     $form['user[username]'] = 'newuser';
-    //     $form['user[password][first]'] = 'test';
-    //     $form['user[password][second]'] = 'test';
-    //     $form['user[email]'] = 'newUser@example.org';
-    //     $form['user[roles]'] = ["ROLE_USER"];
-    //     $client->submit($form);
-    //     static::assertSame(302, $client->getResponse()->getStatusCode());
-
-    //     $crawler = $client->followRedirect();
-    //     static::assertSame(200, $client->getResponse()->getStatusCode());
-    // }
 }
