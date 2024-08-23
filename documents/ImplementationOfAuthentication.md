@@ -56,15 +56,19 @@ A firewall is designated to prevent an unauthenticated user from accessing certa
         password_parameter: password
 ```
 
-### Access_Control
+### Securing URL patterns (access_control)
+
+The most basic way to secure part of your app is to secure an entire URL pattern in security.yaml.
 
 ```shell
   access_control:
     - { path: ^/users, roles: ROLE_ADMIN }
-     - { path: ^/, roles: ROLE_USER }
+    - { path: ^/, roles: ROLE_USER }
 ```
 
 ### Hierarchical Roles
+
+Instead of giving many roles to each user, you can define role inheritance rules by creating a role hierarchy:
 
 ```shell
     role_hierarchy:
