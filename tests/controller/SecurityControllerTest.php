@@ -52,4 +52,16 @@ class SecurityControllerTest extends WebTestCase
 
         $this->assertSelectorExists('.alert.alert-danger');
     }
+
+    public function testLogout()
+    {
+        // $securityControllerTest = new SecurityControllerTest();
+        // $client = $securityControllerTest->testLogin();
+        // $client->request('GET', '/logout');
+        // $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $client = static::createClient();
+        $client->request('GET', '/logout');
+        static::assertSame(302, $client->getResponse()->getStatusCode());
+    }
 }
