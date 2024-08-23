@@ -20,7 +20,9 @@ git push origin <branch-name>
 ## Run tests
 
 Execute this command :
+
 ```shell
  vendor/bin/phpunit --coverage-html public/test-coverage
 ```
-For more informations [Symfony Documentation Testing](https://symfony.com/doc/4.x/testing.html)
+
+For more informations [Symfony Documentation Testing](https://symfony.com/doc/6.4/testing.html)
