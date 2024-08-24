@@ -40,41 +40,6 @@ class UserControllerTest extends WebTestCase
         static::assertSame("Liste des utilisateurs", $crawler->filter('h1')->text());
     }
 
-    public function testEditAction()
-    {
-        $securityControllerTest = new SecurityControllerTest();
-        $client = $securityControllerTest->testLogin();
-        // dump('client : ');
-        // dump($client);
-        $users = [];
-        $entityManager = $client->getContainer()
-            ->get('doctrine')
-            ->getManager();
-        $allUsers = $entityManager
-            ->getRepository(User::class)
-            ->findAll();
-
-        foreach ($allUsers as $user) {
-            if ($user->getUsername() !== "admin" && $user->getUsername() !== "anonyme" && $user->getUsername() !== "user" && $user->getUsername() !== "user2") {
-                array_push($users, $user);
-            }
-        }
-        $randomNumber = random_int(0, count($users) - 1);
-        $user = $users[$randomNumber];
-        $crawler = $client->request('POST', '/users/17/edit');
-        static::assertSame(200, $client->getResponse()->getStatusCode());
-
-        $form = $crawler->selectButton('Modifier')->form();
-        $form['user[username]'] = 'testFixture2';
-        $form['user[email]'] = 'john.doe2@example.com';
-        $form['user[roles]'] = 'ROLE_ADMIN';
-        $client->submit($form);
-        static::assertSame(302, $client->getResponse()->getStatusCode());
-
-        $crawler = $client->followRedirect();
-        static::assertSame(200, $client->getResponse()->getStatusCode());
-    }
-
     public function testEditUser()
     {
         $securityControllerTest = new SecurityControllerTest();
@@ -94,7 +59,7 @@ class UserControllerTest extends WebTestCase
 
         // Test if creation page field exists
         static::assertSame(1, $crawler->filter('input[name="user[username]"]')->count());
-        static::assertSame(1, $crawler->filter('textarea[name="user[email]"]')->count());
+        static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
 
         $form = $crawler->selectButton('Modifier')->form();
         $form['user[username]'] = 'newuser5';

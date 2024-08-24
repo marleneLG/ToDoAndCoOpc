@@ -87,7 +87,7 @@ class TaskControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $crawler = $client->request('GET', '/tasks/38/edit');
+        $crawler = $client->request('GET', '/tasks/39/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
         // Test if creation page field exists
@@ -109,7 +109,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/65/delete');
+        $client->request('GET', '/tasks/40/delete');
         static::assertSame(302, $client->getResponse()->getStatusCode());
         $client->followRedirect();
         static::assertSame(200, $client->getResponse()->getStatusCode());
@@ -120,7 +120,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/64/toggle');
+        $client->request('GET', '/tasks/41/toggle');
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
         $client->followRedirect();
@@ -132,7 +132,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/63/delete');
+        $client->request('GET', '/tasks/42/delete');
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
         $client->followRedirect();
