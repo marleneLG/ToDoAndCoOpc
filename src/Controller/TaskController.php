@@ -9,13 +9,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class TaskController extends AbstractController
 {
     #[Route('/tasks', name: 'task_list', methods: ['GET'])]
-    public function listAction(TaskRepository $repo)
+    public function listAction(TaskRepository $repo): Response
     {
         if ($this->isGranted('ROLE_ADMIN')) {
             return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUserAdmin($this->getUser())]);
@@ -28,7 +29,7 @@ class TaskController extends AbstractController
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
-    public function createAction(Request $request, EntityManagerInterface $em)
+    public function createAction(Request $request, EntityManagerInterface $em): Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -52,7 +53,7 @@ class TaskController extends AbstractController
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
-    public function editAction(Task $task, Request $request, EntityManagerInterface $em)
+    public function editAction(Task $task, Request $request, EntityManagerInterface $em): Response
     {
         if ($task->getUser() !== $this->getUser()) {
             $this->addFlash('error', 'Not authorized to update this task');
@@ -69,8 +70,7 @@ class TaskController extends AbstractController
 
             return $this->redirectToRoute('task_list');
         }
-        dump('logger edit task');
-        dump($task);
+  
         return $this->render('task/edit.html.twig', [
             'form' => $form->createView(),
             'task' => $task,
@@ -81,7 +81,7 @@ class TaskController extends AbstractController
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
-    public function toggleTaskAction(Task $task, EntityManagerInterface $em)
+    public function toggleTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         $task->toggle(!$task->isDone());
         $em->flush();
@@ -95,7 +95,7 @@ class TaskController extends AbstractController
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
-    public function deleteTaskAction(Task $task, EntityManagerInterface $em)
+    public function deleteTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         if ($task->getUser() !== $this->getUser()) {
             if ($task->getUser() === null) {

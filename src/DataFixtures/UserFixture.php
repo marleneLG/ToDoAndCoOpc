@@ -32,8 +32,7 @@ class UserFixture extends Fixture
         $user->setPassword($password);
         $user->setUsername('testFixture2');
         $manager->persist($user);
-        dump('user fixtures: ');
-        dump($user);
+   
         $manager->flush();
     }
 }

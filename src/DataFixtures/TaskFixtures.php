@@ -51,8 +51,7 @@ class TaskFixture extends Fixture
         $task->setDone(false);
         $task->setUser($user);
         $manager->persist($task);
-        dump('task fixture :');
-        dump($task);
+    
         $manager->flush();
     }
 }
