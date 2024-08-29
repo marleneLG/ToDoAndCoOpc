@@ -70,7 +70,7 @@ class TaskController extends AbstractController
 
             return $this->redirectToRoute('task_list');
         }
-  
+
         return $this->render('task/edit.html.twig', [
             'form' => $form->createView(),
             'task' => $task,
@@ -91,7 +91,7 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task_list');
     }
 
-    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['GET'])]
+    #[Route('/tasks/{id}/delete', name: 'task_delete', methods: ['GET', 'POST'])]
     #[IsGranted(new Expression(
         '"ROLE_ADMIN" in role_names or (is_authenticated())'
     ))]
