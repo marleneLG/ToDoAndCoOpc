@@ -59,8 +59,7 @@ class AppFixtures extends Fixture
         $task->setDone(false);
         $this->userRepository->addTask($task);
         $manager->persist($task);
-        // dump('task fixture :');
-        // dump($task);
+     
         $manager->flush();
     }
 }
