@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'login')]
+    #[Route('/login', name:'login', methods: ['GET', 'POST'])]
     public function loginAction(AuthenticationUtils $authenticationUtils): Response
     {
         // 1. REDIRECT USER IF USER IS CONNECTED
@@ -32,7 +32,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/logout", name="logout")
      */
-    #[Route('/logout', name: 'logout')]
+    #[Route('/logout', name:'logout', methods: ['GET', 'POST'])]
     public function logoutCheck(): Exception
     {
         throw new \Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
