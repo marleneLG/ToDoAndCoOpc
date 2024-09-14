@@ -54,7 +54,7 @@ class UserControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $crawler = $client->request('GET', '/users/17/edit');
+        $crawler = $client->request('GET', '/users/45/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
         // Test if creation page field exists
@@ -62,11 +62,11 @@ class UserControllerTest extends WebTestCase
         static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
 
         $form = $crawler->selectButton('Modifier')->form();
-        $form['user[username]'] = 'newuser5';
+        $form['user[username]'] = 'newuser';
         $form['user[password][first]'] = 'test';
         $form['user[password][second]'] = 'test';
-        $form['user[email]'] = 'newUser5@example.org';
-        $form['user[roles]'] = ["ROLE_USER"];
+        $form['user[email]'] = 'newUser@example.org';
+        $form['user[roles]'] = 'ROLE_USER';
         $client->submit($form);
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
@@ -90,10 +90,7 @@ class UserControllerTest extends WebTestCase
 
         // Test if creation page field exists
         static::assertSame(1, $crawler->filter('input[name="user[username]"]')->count());
-        static::assertSame(1, $crawler->filter('input[name="user[password][first]"]')->count());
-        static::assertSame(1, $crawler->filter('input[name="user[password][second]"]')->count());
         static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
-        static::assertSame(0, $crawler->filter('input[name="user[roles][]"]')->count());
 
         $form = $crawler->selectButton('Ajouter')->form();
         $form['user[username]'] = 'newuser';

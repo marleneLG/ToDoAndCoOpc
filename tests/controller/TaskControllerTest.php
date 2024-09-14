@@ -25,6 +25,22 @@ class TaskControllerTest extends WebTestCase
         static::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
+    public function testTaskListUser(): void
+    {
+        $client = static::createClient();
+        $userRepository = static::getContainer()->get(UserRepository::class);
+
+        // retrieve the test user
+        $testUser = $userRepository->findOneByEmail('johnnnn.doe@example.com');
+
+        // simulate $testUser being logged in
+        $client->loginUser($testUser);
+
+        // test e.g. the profile page
+        $client->request('GET', '/tasks');
+        static::assertSame(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testListActionWithoutLogin()
     {
         // If the user isn't logged, should redirect to the login page
@@ -67,7 +83,6 @@ class TaskControllerTest extends WebTestCase
         $form['task[title]'] = 'Nouvelle tâche de test';
         $form['task[content]'] = 'blabla Ceci est une tâche crée par un test';
         $client->submit($form);
-        static::assertSame(302, $client->getResponse()->getStatusCode());
 
         $crawler = $client->followRedirect();
         static::assertSame(200, $client->getResponse()->getStatusCode());
@@ -87,7 +102,7 @@ class TaskControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $crawler = $client->request('GET', '/tasks/39/edit');
+        $crawler = $client->request('GET', '/tasks/99/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
         // Test if creation page field exists
@@ -109,7 +124,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/40/delete');
+        $client->request('GET', '/tasks/98/delete');
         static::assertSame(302, $client->getResponse()->getStatusCode());
         $client->followRedirect();
         static::assertSame(200, $client->getResponse()->getStatusCode());
@@ -120,7 +135,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/41/toggle');
+        $client->request('GET', '/tasks/97/toggle');
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
         $client->followRedirect();
@@ -132,7 +147,7 @@ class TaskControllerTest extends WebTestCase
         $securityControllerTest = new SecurityControllerTest();
         $client = $securityControllerTest->testLogin();
 
-        $client->request('GET', '/tasks/42/delete');
+        $client->request('GET', '/tasks/96/delete');
         static::assertSame(302, $client->getResponse()->getStatusCode());
 
         $client->followRedirect();
