@@ -54,7 +54,7 @@ class UserControllerTest extends WebTestCase
 
         // simulate $testUser being logged in
         $client->loginUser($testUser);
-        $crawler = $client->request('GET', '/users/45/edit');
+        $crawler = $client->request('GET', '/users/17/edit');
         static::assertSame(200, $client->getResponse()->getStatusCode());
 
         // Test if creation page field exists
@@ -62,10 +62,10 @@ class UserControllerTest extends WebTestCase
         static::assertSame(1, $crawler->filter('input[name="user[email]"]')->count());
 
         $form = $crawler->selectButton('Modifier')->form();
-        $form['user[username]'] = 'newuser45';
+        $form['user[username]'] = 'newuser5';
         $form['user[password][first]'] = 'test';
         $form['user[password][second]'] = 'test';
-        $form['user[email]'] = 'newUser45@example.org';
+        $form['user[email]'] = 'newUser5@example.org';
         $form['user[roles]'] = ["ROLE_USER"];
         $client->submit($form);
         static::assertSame(302, $client->getResponse()->getStatusCode());
@@ -107,20 +107,4 @@ class UserControllerTest extends WebTestCase
         $crawler = $client->followRedirect();
         static::assertSame(200, $client->getResponse()->getStatusCode());
     }
-
-    // public function testLogout()
-    // {
-    //     $securityControllerTest = new SecurityControllerTest();
-    //     $client = $securityControllerTest->testLogin();
-    //     $userRepository = static::getContainer()->get(UserRepository::class);
-
-    //     // retrieve the test user
-    //     $testUser = $userRepository->findOneByEmail('john.doe@example.com');
-
-    //     // simulate $testUser being logged in
-    //     $client->loginUser($testUser);
-    //     $client->request('GET', "/logout");
-    //     $client->request('GET', "/tasks");
-    //     $this->assertEquals('200', $client->getResponse()->getStatusCode());
-    // }
 }
