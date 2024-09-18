@@ -63,7 +63,6 @@ The most basic way to secure part of your app is to secure an entire URL pattern
 ```shell
   access_control:
     - { path: ^/users, roles: ROLE_ADMIN }
-    - { path: ^/, roles: ROLE_USER }
 ```
 
 ### Hierarchical Roles

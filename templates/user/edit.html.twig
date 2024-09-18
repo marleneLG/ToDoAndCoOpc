@@ -1,14 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block header_title %}<h1>Modifier <strong>{{ user.username }}</strong></h1>{% endblock %}
+{% block header_title %}
+<h1 class="text-center">Modifier <strong>{{ user.username }}</strong></h1>
+{% endblock %}
+
 {% block header_img %}{% endblock %}
 
 {% block body %}
-<div class="row">
-    {{ form_start(form, {'action' : path('user_edit', {'id' : user.id})}) }}
-    {{ form_widget(form) }}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            {{ form_start(form, {'action' : path('user_edit', {'id' : user.id})}) }}
 
-    <button type="submit" class="btn btn-success pull-right">Modifier</button>
-    {{ form_end(form) }}
+            <div class="mb-3">
+                {{ form_widget(form) }}
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success">Modifier</button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
 </div>
 {% endblock %}

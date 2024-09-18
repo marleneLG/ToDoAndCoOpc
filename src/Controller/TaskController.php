@@ -20,9 +20,12 @@ class TaskController extends AbstractController
     {
         if ($this->isGranted('ROLE_ADMIN')) {
             return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUserAdmin($this->getUser())]);
-        } else {
+        } elseif ($this->isGranted('ROLE_USER')) {
             return $this->render('task/list.html.twig', ['tasks' => $repo->findAllTaskByUser($this->getUser())]);
         }
+
+        $this->addFlash('error', 'Not authorized to access to task list, please login');
+        return $this->redirectToRoute('login');
     }
 
     #[Route('/tasks/create', name: 'task_create', methods: ['GET', 'POST'])]

@@ -1,15 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block header_title %}
-<h1>Bienvenue sur Todo List, l'application vous permettant de gérer l'ensemble de vos tâches sans effort !</h1>
+<h1 class="text-center mt-4">Bienvenue sur Todo List, l'application vous permettant de gérer l'ensemble de vos tâches
+    sans effort !</h1>
 {% endblock %}
 
 {% block body %}
+<div class="container mt-5">
+    <div class="row text-center">
+        {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="col-12">
+            <h2>Veuillez vous connecter s'il vous plaît</h2>
+        </div>
+        {% endif %}
 
-<div class="row">
-    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-    <a href="{{ path('task_create') }}" class="btn btn-success">Créer une nouvelle tâche</a>
-    {% endif %}
-    <a href="{{ path('task_list') }}" class="btn btn-info">Consulter la liste des tâches à faire</a>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="col-12">
+            <a href="{{ path('task_create') }}" class="btn btn-success mb-3">Créer une nouvelle tâche</a>
+            <a href="{{ path('task_list') }}" class="btn btn-info mb-3">Consulter la liste des tâches à faire</a>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
